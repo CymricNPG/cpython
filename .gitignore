@@ -108,7 +108,7 @@ tmp/
 *.swp
 *~.nib
 local.properties
-.settings/
+#.settings/
 .loadpath
 .recommenders
 
@@ -122,7 +122,7 @@ local.properties
 *.launch
 
 # PyDev specific (Python IDE for Eclipse)
-*.pydevproject
+#*.pydevproject
 
 # CDT-specific (C/C++ Development Tooling)
 .cproject
