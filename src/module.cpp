@@ -21,7 +21,7 @@ Color enumfromString(std::string input) {
 	throw std::logic_error("Unknown enum:" + input);
 }
 
-static PyObject* Foo_doSomething(PyObject *self, PyObject *args) {
+static PyObject* convertEnum(PyObject *self, PyObject *args) {
 	auto resultEnum = enumfromString(PyString_AsString(args));
 	return incref(object(resultEnum).ptr());
 }
@@ -37,15 +37,18 @@ BOOST_PYTHON_MODULE(libpy_module)
 			Color::green).export_values();
 
 	PyObject *enum_type = reinterpret_cast<PyObject *>(testEnum.ptr());
+
+	// get the metatype and make a copy
 	PyTypeObject *pto = reinterpret_cast<PyTypeObject *>(enum_type->ob_type);
 	PyTypeObject *new_pto = new PyTypeObject();
-	memcpy(new_pto, pto, sizeof(PyTypeObject)); // do we need borrow?
-	//see enum..cpp in boost type_handle base(borrowed(&enum_type_object));
+	memcpy(new_pto, pto, sizeof(PyTypeObject)); // do we need borrow? see enum..cpp in boost type_handle base(borrowed(&enum_type_object));
 
-	PyMappingMethods *counter_as_mapping = new PyMappingMethods();
-	counter_as_mapping->mp_subscript = Foo_doSomething,
+	// define a new mapping method
+	PyMappingMethods *mapping = new PyMappingMethods();
+	mapping->mp_subscript = convertEnum,
 
-	new_pto->tp_as_mapping = counter_as_mapping;
+	// replace the old mapping method and overwrite the meta type in the enum
+	new_pto->tp_as_mapping = mapping;
 	enum_type->ob_type = new_pto;
 
 }
