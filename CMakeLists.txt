@@ -13,4 +13,6 @@ set(BOOST_VERSION 1.60.0)
 
 FIND_PACKAGE(Boost ${BOOST_VERSION} COMPONENTS python filesystem system  timer REQUIRED)
 
+add_definitions(-std=c++11)
+
 ADD_SUBDIRECTORY(src)
