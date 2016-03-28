@@ -1,6 +1,7 @@
 include_directories (${PYTHON_INCLUDE_DIRS})
 
 file(GLOB_RECURSE cppFiles RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.cpp)
+list(REMOVE_ITEM cppFiles "main.cpp")
 
 set(LIB_MODULE "py_module")
 add_library(${LIB_MODULE} SHARED ${cppFiles})

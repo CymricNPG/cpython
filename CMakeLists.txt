@@ -16,3 +16,11 @@ FIND_PACKAGE(Boost ${BOOST_VERSION} COMPONENTS python filesystem system  timer R
 add_definitions(-std=c++11)
 
 ADD_SUBDIRECTORY(src)
+
+SET( app_name "main")
+
+add_executable(${app_name} "src/main.cpp")
+
+target_link_libraries(${app_name}  ${PYTHON_LIBRARIES} ${Boost_LIBRARIES} py_module )
+
+set_target_properties(${app_name} PROPERTIES RUNTIME_OUTPUT_DIRECTORY  ${CMAKE_CURRENT_SOURCE_DIR})
