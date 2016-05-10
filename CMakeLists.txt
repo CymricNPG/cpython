@@ -1,10 +1,15 @@
 cmake_minimum_required (VERSION 2.8)
 
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
+
 SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Werror=return-type -Wextra -Wno-unused-parameter -Wpedantic" )
 
-set(PYTHON_VERSION 2.7 CACHE STRING "Python version")
+set(PYTHON_VERSION 3.5 CACHE STRING "Python version")
 
 FIND_PACKAGE(PythonLibs ${PYTHON_VERSION} REQUIRED)
+
+find_package(NumPy REQUIRED)
+include_directories(${NUMPY_INCLUDE_DIRS})
 
 SET(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED      ON)

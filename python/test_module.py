@@ -1,5 +1,5 @@
 import unittest
-from libpy_module import getTestString
+from libpy_module import getTestString, getOptionalString
 
 class TestModule(unittest.TestCase):
 
@@ -11,3 +11,6 @@ class TestModule(unittest.TestCase):
 
     def test_get_string(self):
         self.assertEqual("Hello World!", getTestString())
+
+    def test_optional_string(self):
+        self.assertEqual("Test", getOptionalString())
