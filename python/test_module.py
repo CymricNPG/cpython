@@ -11,3 +11,6 @@ class TestModule(unittest.TestCase):
 
     def test_get_string(self):
         self.assertEqual("Hello World!", getTestString())
+
+    def test_fail(self):
+        self.fail("TestFail")
