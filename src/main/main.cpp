@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "Test.h"
+#include "../lib/Test.h"
 
 int main() {
 	std::cout << Test::getTestString() << std::endl;

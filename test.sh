@@ -1,6 +1,5 @@
 #!/bin/sh
 DIR=$( cd "$( dirname "$0" )" && pwd )
-export PYTHONPATH=$DIR/lib/
+export PYTHONPATH=$DIR/bin/
 cd $DIR/python
-find .|grep ".pyc$"|xargs rm
-nosetests $@
+python nosetests.py $@
