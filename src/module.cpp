@@ -4,6 +4,7 @@
 #include <map>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <iostream>
+#include "PyObjectCache.hpp"
 
 using namespace boost::python;
 
@@ -31,18 +32,16 @@ PyObject* getObject(boost::shared_ptr<A> obj, PyObject *dst) {
 
 }
 
-
 typedef typename boost::python::pointee<boost::shared_ptr<A>>::type X;
 
 struct A_ptr_to_python_A {
 	static PyObject* convert(const boost::shared_ptr<A> &a) {
 		std::cout << "Conversion started" << std::endl;
-		auto result =  objects::make_ptr_instance<X,
+		auto result = objects::make_ptr_instance<X,
 				objects::pointer_holder<boost::shared_ptr<A>, X>>::execute(a);
 		return getObject(a, result); // get the cached object
 	}
 };
-
 
 // Custom call policy to overwrite the postcall from C++ back to python //
 template<typename BasePolicy = boost::python::default_call_policies>
@@ -115,9 +114,11 @@ BOOST_PYTHON_MODULE(libpy_module)
 {
 	def("getTestString", &Test::getTestString);
 	def("getTest", &Test::getTest);
+	def("getCount", &A::getCount);
 
 	class_<Test, boost::noncopyable>("Test", no_init) //
 	.def("getA", &Test::getA) // , existing_element_policy<>()) //
+	.def("resetA", &Test::resetA) //
 	.def("getAs", &Test::getAs);
 
 	register_ptr_to_python<boost::shared_ptr<Test> >();
@@ -127,7 +128,8 @@ BOOST_PYTHON_MODULE(libpy_module)
 	.def("getString", &A::getString) //
 	.def("setString", &A::setString) //
 			;
-	boost::python::to_python_converter<boost::shared_ptr<A>, A_ptr_to_python_A>();
+	boost::python::to_python_converter<boost::shared_ptr<A>,
+			c_ptr_to_cached_python<A>>();
 	//register_ptr_to_python<boost::shared_ptr<A> >();
 
 	addSharedVector<A>("AVector");

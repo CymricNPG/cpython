@@ -1,5 +1,6 @@
 import unittest
-from libpy_module import getTestString, getTest
+from libpy_module import getTestString, getTest, getCount
+import gc
 
 class TestModule(unittest.TestCase):
 
@@ -15,7 +16,7 @@ class TestModule(unittest.TestCase):
     def test_get_A(self):
         test = getTest()
         a = test.getA()
-        self.assertEqual(a.getString(), "1")
+        self.assertEqual(a.getString(), "0")
 
     def test_eq(self):
         test = getTest()
@@ -74,3 +75,24 @@ class TestModule(unittest.TestCase):
         a1 = None
         a2 = test.getAs()[0]
         self.assertEqual("2", a2.new_var)
+
+    def test_reset(self):
+        test = getTest()
+        a1 = test.getA()
+        test.resetA()
+        a2 = test.getA()
+        self.assertEqual(a1.getString(), "0")
+        self.assertEqual(a2.getString(), "1")
+        self.assertIsNot(a1, a2)
+
+    def test_delete_object_is_freed(self):
+        test = getTest()
+        a1 = test.getA()
+        self.assertEquals(1, getCount());
+        test.resetA()
+        a2 = test.getA()
+        self.assertEquals(2, getCount());
+        del(a1)
+        a1 = None
+        gc.collect()
+        self.assertEquals(1, getCount());
