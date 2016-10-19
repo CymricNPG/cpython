@@ -6,23 +6,21 @@
 template<typename C_CLASS>
 using storage_map = std::map<C_CLASS*, PyObject*>;
 
+// does not work with inheritance
 template<typename C_CLASS>
 storage_map<C_CLASS>* getCachedObjects() {
 	static storage_map<C_CLASS> *storage = new storage_map<C_CLASS>();
 	return storage;
 }
 
-template<typename C_CLASS>
-using c_sptr = boost::shared_ptr<C_CLASS>;
+template<typename C_CLASS> using c_sptr = boost::shared_ptr<C_CLASS>;
 
-template<typename C_CLASS>
-using py_ptr = typename boost::python::pointee<boost::shared_ptr<C_CLASS>>::type;
+template<typename T> using py_ptr = T;
 
-template<typename C_CLASS>
-PyObject * createObject(const c_sptr<C_CLASS>& obj) {
-	return boost::python::objects::make_ptr_instance<py_ptr<C_CLASS>,
-			boost::python::objects::pointer_holder<c_sptr<C_CLASS>,
-					py_ptr<C_CLASS>>>::execute(obj);
+template<typename T>
+PyObject * createObject(const c_sptr<T>& obj) {
+	using namespace boost::python::objects;
+	return make_ptr_instance<T, pointer_holder<c_sptr<T>, T>>::execute(obj);
 }
 
 template<typename C_CLASS>
@@ -30,7 +28,7 @@ void cleanMap() {
 	auto map = getCachedObjects<C_CLASS>();
 	for (auto it = map->begin(); it != map->end();) {
 		auto py_obj = it->second;
-		Py_DecRef(py_obj);
+		Py_DECREF(py_obj);
 		map->erase(it++);
 	}
 }
@@ -44,7 +42,7 @@ void removeObject(const c_sptr<C_CLASS>& obj) {
 		throw std::logic_error("Object was already removed.");
 	}
 	auto py_obj = it->second;
-	Py_DecRef(py_obj);
+	Py_DECREF(py_obj);
 	map->erase(it);
 }
 
